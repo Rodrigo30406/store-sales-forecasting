@@ -1,0 +1,17 @@
+paths:
+  train: 'data/train.csv'
+  test: 'data/test.csv'
+  train_data: 'data/variables/train_data.pkl'
+  scaler: 'data/variables/scaler.pkl'
+
+variables:
+  categorical:
+    static: ['family', 'store_nbr']
+    dynamic: []
+  target: 'sales'
+
+transformations:
+  normalize: True
+  date_columns: True
+
+timesteps: 5
