@@ -56,12 +56,13 @@ class AdaptiveScaler(BaseEstimator, TransformerMixin):
     Aplica MinMaxScaler individualmente a columnas numéricas especificadas.
     Guarda el escalador de cada columna para aplicar la misma transformación en test.
     """
-    def __init__(self, columns=["onpromotion", "sales", "day", "month", "weekday"]):
-        self.columns = columns
+    def __init__(self, excluded_columns=["store_nbr", "family"]):
+        self.excluded_col = excluded_columns
         self.scalers = {}
 
     def fit(self, X, y=None):
         # Ajusta un MinMaxScaler por cada columna presente
+        self.columns = X.drop(columns=self.excluded_col + ["date"])
         for col in self.columns:
             if col in X.columns:
                 scaler = MinMaxScaler()
@@ -86,7 +87,11 @@ class CyclicEncoder(BaseEstimator, TransformerMixin):
     columns_config: dict donde la clave es el nombre de la columna 
     y el valor es el número máximo del ciclo (ej: 31 para día, 12 para mes).
     """
-    def __init__(self, columns_config=None):
+    def __init__(self, columns_config={
+            "day": 31,
+            "month": 12,
+            "weekday": 7
+        }):
         self.columns_config = columns_config if columns_config else {}
 
     def fit(self, X, y=None):
