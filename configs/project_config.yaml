@@ -1,12 +1,16 @@
 paths:
   train: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/train.csv'
   test: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/test.csv'
+  store_metadata: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/stores.csv'
+  train_parquet: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet'
   train_data: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/variables/train_data.pkl'
   scaler: 'data/variables/scaler.pkl'
 
 variables:
   categorical:
-    static: ['family', 'store_nbr']
+    static: 
+      default: ['family', 'store_nbr']
+      added: ['city', 'state', 'type', 'cluster']
     dynamic: []
   target: 'sales'
 

@@ -1,8 +1,8 @@
 from src.models.generador_modelos_v3 import HybridModel
-from src.transform.procesador_datos import DataManager
+from src.pipelines.procesador_datos import DataManager
 from pprint import pprint
 from tensorflow.keras.optimizers import Adam # type: ignore
-from src.utils.metrics import rmsle
+from src.evaluation.metrics import rmsle
 
 data_manager = DataManager()
 model = HybridModel(data_manager.generate_metadata())

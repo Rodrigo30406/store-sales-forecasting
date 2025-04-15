@@ -3,14 +3,21 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import pandas as pd
 
+
 class DatePartAdder(BaseEstimator, TransformerMixin):
+    """
+    Extrae componentes temporales (día, mes, día de la semana)
+    a partir de una columna de fecha especificada.
+    """
     def __init__(self, date_column="date"):
         self.date_column = date_column
 
     def fit(self, X, y=None):
+        # No requiere entrenamiento, retorna self
         return self
 
     def transform(self, X):
+        # Crea nuevas columnas: 'day', 'month', 'weekday' a partir de la fecha
         X = X.copy()
         X[self.date_column] = pd.to_datetime(X[self.date_column])
         X["day"] = X[self.date_column].dt.day
@@ -18,17 +25,24 @@ class DatePartAdder(BaseEstimator, TransformerMixin):
         X["weekday"] = X[self.date_column].dt.weekday
         return X
 
+
 class CategoricalEncoder(BaseEstimator, TransformerMixin):
+    """
+    Codifica columnas categóricas especificadas como enteros únicos
+    mediante asignación por índice ordenado.
+    """
     def __init__(self, columns=["store_nbr", "family"]):
         self.columns = columns
         self.category_maps = {}
 
     def fit(self, X, y=None):
+        # Guarda la lista ordenada de categorías para cada columna
         for col in self.columns:
             self.category_maps[col] = pd.Series(X[col].unique()).sort_values().reset_index(drop=True)
         return self
 
     def transform(self, X):
+        # Convierte las categorías en índices numéricos
         X = X.copy()
         for col in self.columns:
             cat_list = self.category_maps[col]
@@ -36,12 +50,18 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
             X[col] = X[col].map(cat_to_idx).fillna(-1).astype(int)
         return X
 
+
 class AdaptiveScaler(BaseEstimator, TransformerMixin):
+    """
+    Aplica MinMaxScaler individualmente a columnas numéricas especificadas.
+    Guarda el escalador de cada columna para aplicar la misma transformación en test.
+    """
     def __init__(self, columns=["onpromotion", "sales", "day", "month", "weekday"]):
         self.columns = columns
         self.scalers = {}
 
     def fit(self, X, y=None):
+        # Ajusta un MinMaxScaler por cada columna presente
         for col in self.columns:
             if col in X.columns:
                 scaler = MinMaxScaler()
@@ -50,11 +70,13 @@ class AdaptiveScaler(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
+        # Aplica el MinMaxScaler correspondiente a cada columna
         X = X.copy()
         for col in self.columns:
             if col in X.columns and col in self.scalers:
                 X[col] = self.scalers[col].transform(X[[col]])
         return X
+
 
 class CyclicEncoder(BaseEstimator, TransformerMixin):
     """
@@ -78,6 +100,7 @@ class CyclicEncoder(BaseEstimator, TransformerMixin):
             X.drop(columns=[col], inplace=True)
         return X
 
+
 class WeekendFlagger(BaseEstimator, TransformerMixin):
     """
     Agrega una columna binaria 'is_weekend' basada en la columna 'weekday'.
@@ -96,3 +119,25 @@ class WeekendFlagger(BaseEstimator, TransformerMixin):
         else:
             raise ValueError(f"'{self.weekday_col}' not found in columns.")
         return X
+
+
+class StoreMetadataMerger(BaseEstimator, TransformerMixin):
+    """
+    Une columnas de metadata de tienda al dataset principal usando 'store_nbr' como clave.
+    """
+    def __init__(self, metadata_path='data/raw/stores.csv', on="store_nbr"):
+        self.metadata_path = metadata_path
+        self.on = on
+        self.metadata = None
+
+    def fit(self, X, y=None):
+        self.metadata = pd.read_csv(self.metadata_path)
+        if self.on not in self.metadata.columns:
+            raise ValueError(f"La columna '{self.on}' no está en la metadata.")
+        return self
+
+    def transform(self, X):
+        X = X.copy()
+        if self.on not in X.columns:
+            raise ValueError(f"La columna '{self.on}' no está en el DataFrame de entrada.")
+        return X.merge(self.metadata, how="left", on=self.on)
