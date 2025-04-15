@@ -1,6 +1,7 @@
 import yaml
 import time
 import pickle
+import requests
 import tensorflow as tf
 from tqdm import tqdm
 from pandas import read_csv, Categorical
@@ -111,8 +112,8 @@ class DataManager():
         if self.load:
             train_data = self.generate_X_train()
         else:
-            with open(self.train_data_path, "rb") as file:
-                train_data = pickle.load(file)  
+            response = requests.get(self.train_data_path)
+            train_data = pickle.loads(response.content)
         # Apply train_test_split to all attributes in `data_list`
         split_results = train_test_split(*train_data.values(), test_size=0.2, random_state=42)
 

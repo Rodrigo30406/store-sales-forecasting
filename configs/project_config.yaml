@@ -1,7 +1,7 @@
 paths:
-  train: 'data/train.csv'
-  test: 'data/test.csv'
-  train_data: 'data/variables/train_data.pkl'
+  train: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/train.csv'
+  test: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/test.csv'
+  train_data: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/variables/train_data.pkl'
   scaler: 'data/variables/scaler.pkl'
 
 variables:
