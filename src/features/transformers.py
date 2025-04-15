@@ -62,7 +62,8 @@ class AdaptiveScaler(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         # Ajusta un MinMaxScaler por cada columna presente
-        self.columns = X.drop(columns=self.excluded_col + ["date"])
+        cols_to_use = X.columns.difference(self.excluded_col + ["date"])
+        self.columns = X[cols_to_use]
         for col in self.columns:
             if col in X.columns:
                 scaler = MinMaxScaler()

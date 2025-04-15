@@ -20,7 +20,7 @@ def test_categorical_encoder_encodes_correctly(sample_categorical_df):
 
 # Test para AdaptiveScaler
 def test_adaptive_scaler_scales_between_0_and_1(sample_numeric_df):
-    scaler = AdaptiveScaler(columns=["sales", "onpromotion"])
+    scaler = AdaptiveScaler(excluded_columns=["store_nbr", "family"])
     scaled = scaler.fit_transform(sample_numeric_df)
     for col in ["sales", "onpromotion"]:
         assert col in scaled.columns
