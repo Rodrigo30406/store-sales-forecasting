@@ -23,6 +23,7 @@ class DatePartAdder(BaseEstimator, TransformerMixin):
         X["day"] = X[self.date_column].dt.day
         X["month"] = X[self.date_column].dt.month
         X["weekday"] = X[self.date_column].dt.weekday
+        X["date_ordinal"] = X[self.date_column].rank(method="dense").astype(int)
         return X
 
 
@@ -78,6 +79,9 @@ class AdaptiveScaler(BaseEstimator, TransformerMixin):
             if col in X.columns and col in self.scalers:
                 X[col] = self.scalers[col].transform(X[[col]])
         return X
+    
+    def get_scaler(self, col_name):
+        return self.scalers.get(col_name, None)
 
 
 class CyclicEncoder(BaseEstimator, TransformerMixin):

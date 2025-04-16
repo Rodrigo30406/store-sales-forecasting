@@ -4,9 +4,8 @@ from src.features import DatePartAdder, CategoricalEncoder, AdaptiveScaler, Stor
 # Test para DatePartAdder
 def test_datepart_adder_creates_columns(sample_date_df):
     transformed = DatePartAdder().fit_transform(sample_date_df)
-    assert "day" in transformed.columns
-    assert "month" in transformed.columns
-    assert "weekday" in transformed.columns
+    for col in ["day", "month", "weekday", "date_ordinal"]:
+        assert col in transformed.columns
     assert transformed["day"].tolist() == [1, 15]
     assert transformed["month"].tolist() == [1, 6]
 
@@ -20,7 +19,7 @@ def test_categorical_encoder_encodes_correctly(sample_categorical_df):
 
 # Test para AdaptiveScaler
 def test_adaptive_scaler_scales_between_0_and_1(sample_numeric_df):
-    scaler = AdaptiveScaler(excluded_columns=["store_nbr", "family"])
+    scaler = AdaptiveScaler(excluded_columns=["store_nbr", "family","id"])
     scaled = scaler.fit_transform(sample_numeric_df)
     for col in ["sales", "onpromotion"]:
         assert col in scaled.columns

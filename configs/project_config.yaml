@@ -13,6 +13,8 @@ variables:
       added: ['city', 'state', 'type', 'cluster']
     dynamic: []
   target: 'sales'
+  date: 'date'
+  index: 'id'
 
 transformations:
   normalize: True
