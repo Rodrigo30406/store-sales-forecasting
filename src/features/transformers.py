@@ -13,6 +13,7 @@ class DatePartAdder(BaseEstimator, TransformerMixin):
         self.date_column = date_column
 
     def fit(self, X, y=None):
+        self.fit_flag_ = True 
         # No requiere entrenamiento, retorna self
         return self
 
@@ -23,7 +24,7 @@ class DatePartAdder(BaseEstimator, TransformerMixin):
         X["day"] = X[self.date_column].dt.day
         X["month"] = X[self.date_column].dt.month
         X["weekday"] = X[self.date_column].dt.weekday
-        X["date_ordinal"] = X[self.date_column].rank(method="dense").astype(int)
+        X["date_ordinal"] = X[self.date_column].dt.date.map(lambda d: d.toordinal())
         return X
 
 
@@ -37,6 +38,7 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
         self.category_maps = {}
 
     def fit(self, X, y=None):
+        self.fit_flag_ = True
         # Guarda la lista ordenada de categorías para cada columna
         for col in self.columns:
             self.category_maps[col] = pd.Series(X[col].unique()).sort_values().reset_index(drop=True)
@@ -62,6 +64,7 @@ class AdaptiveScaler(BaseEstimator, TransformerMixin):
         self.scalers = {}
 
     def fit(self, X, y=None):
+        self.fit_flag_ = True
         # Ajusta un MinMaxScaler por cada columna presente
         cols_to_use = X.columns.difference(self.excluded_col + ["date"])
         self.columns = X[cols_to_use]
@@ -100,6 +103,7 @@ class CyclicEncoder(BaseEstimator, TransformerMixin):
         self.columns_config = columns_config if columns_config else {}
 
     def fit(self, X, y=None):
+        self.fit_flag_ = True 
         return self  # no entrena nada, es determinista
 
     def transform(self, X):
@@ -120,6 +124,7 @@ class WeekendFlagger(BaseEstimator, TransformerMixin):
         self.weekday_col = weekday_col
 
     def fit(self, X, y=None):
+        self.fit_flag_ = True
         return self
 
     def transform(self, X):
@@ -131,7 +136,7 @@ class WeekendFlagger(BaseEstimator, TransformerMixin):
         return X
 
 
-class StoreMetadataMerger(BaseEstimator, TransformerMixin):
+class DataMerger(BaseEstimator, TransformerMixin):
     """
     Une columnas de metadata de tienda al dataset principal usando 'store_nbr' como clave.
     """
@@ -141,7 +146,11 @@ class StoreMetadataMerger(BaseEstimator, TransformerMixin):
         self.metadata = None
 
     def fit(self, X, y=None):
+        self.fit_flag_ = True
         self.metadata = pd.read_csv(self.metadata_path)
+        if 'date' in self.metadata.columns:
+            self.metadata['date'] = pd.to_datetime(self.metadata['date'])
+            self.metadata['dcoilwtico'] = self.metadata['dcoilwtico'].interpolate(method="linear", limit_direction="both")
         if self.on not in self.metadata.columns:
             raise ValueError(f"La columna '{self.on}' no está en la metadata.")
         return self
@@ -150,4 +159,8 @@ class StoreMetadataMerger(BaseEstimator, TransformerMixin):
         X = X.copy()
         if self.on not in X.columns:
             raise ValueError(f"La columna '{self.on}' no está en el DataFrame de entrada.")
-        return X.merge(self.metadata, how="left", on=self.on)
+        X = X.merge(self.metadata, how="left", on=self.on)
+        null_cols = X.columns[X.isnull().any()]
+        for col in null_cols:
+            X[col] = X[col].ffill()
+        return X

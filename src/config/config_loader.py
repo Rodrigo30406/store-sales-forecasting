@@ -49,9 +49,17 @@ class ConfigLoader:
             return collect_lists(section)
 
         return section
+    
+    def get_active_model_name(self):
+        return self.raw().get("model", {}).get("active", "")
 
-    def get_model_type(self):
-        return self._config.get("model", {}).get("type", "default_model")
+    def get_model_params(self):
+        model_name = self.get_active_model_name()
+        return self.raw().get("model", {}).get(model_name, {}).get("params", {})
+
+    def get_search_space(self):
+        model_name = self.get_active_model_name()
+        return self.raw().get("model", {}).get(model_name, {}).get("search_space", {})
 
 
 # Instancia global para importar en todo el proyecto

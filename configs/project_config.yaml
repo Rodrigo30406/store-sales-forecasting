@@ -1,10 +1,15 @@
 paths:
   train: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/train.csv'
+  train_parquet: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet'
+  test_parquet: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/refs%2Fconvert%2Fparquet/default/test/0000.parquet'
   test: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/test.csv'
   store_metadata: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/stores.csv'
-  train_parquet: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet'
+  oil_path: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/oil.csv'
   train_data: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/variables/train_data.pkl'
-  scaler: 'data/variables/scaler.pkl'
+  predictions: 'data/predictions/submission.csv'
+  scaler: 'data/models/scaler.pkl'
+  model: 'data/models/model_lgbm.pkl'
+  pipeline: 'data/models/pipeline.pkl'
 
 variables:
   categorical:
@@ -16,8 +21,32 @@ variables:
   date: 'date'
   index: 'id'
 
-transformations:
-  normalize: True
-  date_columns: True
+model:
+  active: lgbm
 
-timesteps: 5
+  lgbm:
+    params:
+      n_estimators: 100000
+      learning_rate: 0.1
+      objective: "regression_l1"
+      random_state: 42
+
+    search_space:
+      n_estimators: [300, 500, 1000]
+      learning_rate: [0.01, 0.05, 0.1]
+      num_leaves: [15, 31, 63]
+      max_depth: [5, 10, 15]
+      min_child_samples: [10, 20, 30]
+
+  hybrid:
+    timesteps: 5
+    params:
+      input_dim: 32
+      hidden_units: 64
+      dropout: 0.3
+      batch_size: 32
+      epochs: 50
+
+    search_space:
+      hidden_units: [32, 64, 128]
+      dropout: [0.2, 0.3, 0.4]

@@ -1,5 +1,5 @@
 import pandas as pd
-from src.features import DatePartAdder, CategoricalEncoder, AdaptiveScaler, StoreMetadataMerger
+from src.features import DatePartAdder, CategoricalEncoder, AdaptiveScaler, DataMerger
 
 # Test para DatePartAdder
 def test_datepart_adder_creates_columns(sample_date_df):
@@ -29,7 +29,7 @@ def test_adaptive_scaler_scales_between_0_and_1(sample_numeric_df):
 # Test para StoreMetadataMerger
 def test_store_metadata_merger_adds_columns(sample_store_df):
     df = pd.DataFrame({"store_nbr": [1, 2]})
-    merger = StoreMetadataMerger(metadata_path=str(sample_store_df))
+    merger = DataMerger(metadata_path=str(sample_store_df))
     merged = merger.fit_transform(df)
 
     assert "city" in merged.columns

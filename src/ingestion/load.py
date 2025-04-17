@@ -22,4 +22,15 @@ class DataLoader:
             columns (list, opcional): columnas a cargar del Parquet (para optimizar memoria)
         """
         df = pd.read_parquet(self.config.get_path("train_parquet"), columns=columns)
+        df["date"] = pd.to_datetime(df["date"])
+        return df.set_index(self.index).iloc[:n_rows] if n_rows else df.set_index(self.index)
+    
+    def load_test_parquet(self, columns=None, n_rows=None):
+        """
+        Carga el archivo de entrenamiento en formato Parquet.
+        Parámetros:
+            columns (list, opcional): columnas a cargar del Parquet (para optimizar memoria)
+        """
+        df = pd.read_parquet(self.config.get_path("test_parquet"), columns=columns)
+        df["date"] = pd.to_datetime(df["date"])
         return df.set_index(self.index).iloc[:n_rows] if n_rows else df.set_index(self.index)

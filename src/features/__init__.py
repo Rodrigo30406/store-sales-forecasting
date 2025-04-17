@@ -1,7 +1,7 @@
 from .transformers import (
     DatePartAdder,
     CyclicEncoder,
-    StoreMetadataMerger,
+    DataMerger,
     WeekendFlagger,
     CategoricalEncoder,
     AdaptiveScaler

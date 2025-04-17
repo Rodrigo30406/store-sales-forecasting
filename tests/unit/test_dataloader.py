@@ -6,12 +6,14 @@ def test_load_train_data(data_loader):
     df = data_loader.load_train_data(n_rows=5)
     assert isinstance(df, pd.DataFrame)
     assert "date" in df.columns
+    assert df["date"].dtype == "datetime64[ns]"
     assert df.shape[0] <= 5
 
 def test_load_test_data(data_loader):
     df = data_loader.load_test_data(n_rows=5)
     assert isinstance(df, pd.DataFrame)
     assert "date" in df.columns
+    assert df["date"].dtype == "datetime64[ns]"
     assert df.shape[0] <= 5
 
 def test_load_store_metadata(data_loader):
