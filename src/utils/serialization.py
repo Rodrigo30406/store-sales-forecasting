@@ -1,10 +1,13 @@
+from src.config import CONFIG
 import pandas as pd
 import pickle
 from pathlib import Path
 import joblib
 from typing import Any
 import os
+import logging
 
+logger = logging.getLogger(CONFIG.logger_name)
 
 def save_object(obj: Any, path: str) -> None:
     """
@@ -64,9 +67,9 @@ def save_model(model, path: str) -> None:
         os.makedirs(dir_path, exist_ok=True)
 
     try:
-        print("💾 Guardando modelo entrenado...")
+        logger.info("💾 Guardando modelo entrenado...")
         joblib.dump(model, path)
-        print(f"✅ Modelo guardado exitosamente en: {path}")
+        logger.info(f"✅ Modelo guardado exitosamente en: {path}")
     except Exception as e:
         raise Exception(f"❌ Error al guardar el modelo: {e}")
 
@@ -88,7 +91,7 @@ def load_model(path: str):
     
     try:
         model = joblib.load(path)
-        print(f"✅ Modelo cargado exitosamente desde: {path}")
+        logger.info(f"✅ Modelo cargado exitosamente desde: {path}")
         return model
     except Exception as e:
         raise Exception(f"❌ Error al cargar el modelo: {e}")
@@ -113,4 +116,4 @@ def save_predictions(ids, predictions, output_path: str):
     })
     df_output.to_csv(output_path, index=False)
 
-    print(f"✅ Predicciones guardadas en {output_path}")
+    logger.info(f"✅ Predicciones guardadas en {output_path}")

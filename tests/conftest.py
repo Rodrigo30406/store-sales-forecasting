@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import os
-from src.ingestion.load import DataLoader
+from src.data.load import DataLoader
 
 @pytest.fixture
 def data_loader():

@@ -1,5 +1,4 @@
 import pandas as pd
-from src.ingestion.load import DataLoader
 from src.config import CONFIG
 
 def test_load_train_data(data_loader):

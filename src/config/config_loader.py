@@ -11,6 +11,7 @@ class ConfigLoader:
         if not self.config_path.exists():
             raise FileNotFoundError(f"Config file not found at {self.config_path}")
         self._config = self._load_config()
+        self.logger_name = self._config["logger"]
 
     def _load_config(self):
         with open(self.config_path, "r") as f:

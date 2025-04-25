@@ -1,27 +1,29 @@
-from src.ingestion import DataLoader
-from src.utils import load_object, save_predictions
+from src.data import DataLoader
+from src.utils import load_object, save_predictions, setup_logger
 from src.config import CONFIG
 
+logger = setup_logger(CONFIG.logger_name, CONFIG.get_path('predict_log'))
+
 def run_prediction():
-    print("🔄 Cargando datos de test...")
+    logger.info("🔄 Cargando datos de test...")
     loader = DataLoader()
     X_test = loader.load_test_parquet()
     indexes = X_test.index.values
 
-    print("🧠 Cargando modelo, scaler y pipeline...")
+    logger.info("🧠 Cargando modelo, scaler y pipeline...")
     model = load_object(CONFIG.get_path("model"))
     scaler = load_object(CONFIG.get_path("scaler"))
     pipeline = load_object(CONFIG.get_path("pipeline"))
 
-    print("⚙️ Aplicando pipeline de transformación...")
+    logger.info("⚙️ Aplicando pipeline de transformación...")
     X_test = pipeline.transform(X_test)
     X_test = X_test.drop(columns=["date","sales"])
 
-    print("📈 Generando predicciones...")
+    logger.info("📈 Generando predicciones...")
     preds = model.predict(X_test)
     preds = scaler.inverse_transform(preds.reshape(-1, 1)).ravel()
 
-    print("💾 Guardando resultados...")
+    logger.info("💾 Guardando resultados...")
     save_predictions(indexes, preds, CONFIG.get_path("predictions"))
 
 

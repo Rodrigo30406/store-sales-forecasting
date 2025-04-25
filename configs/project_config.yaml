@@ -1,3 +1,5 @@
+logger: 'sales_store'
+
 paths:
   train: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/train.csv'
   train_parquet: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet'
@@ -6,10 +8,12 @@ paths:
   store_metadata: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/stores.csv'
   oil_path: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/oil.csv'
   train_data: 'https://huggingface.co/datasets/Rodrigo2204/store-sales-forecast/resolve/main/variables/train_data.pkl'
-  predictions: 'data/predictions/submission.csv'
-  scaler: 'data/models/scaler.pkl'
-  model: 'data/models/model_lgbm.pkl'
-  pipeline: 'data/models/pipeline.pkl'
+  predictions: 'predictions/submission.csv'
+  scaler: 'models/scaler.pkl'
+  model: 'models/model_lgbm.pkl'
+  pipeline: 'models/pipeline.pkl'
+  train_log: 'logs/train.log'
+  predict_log: 'logs/predict.log'
 
 variables:
   categorical:
@@ -26,8 +30,8 @@ model:
 
   lgbm:
     params:
-      n_estimators: 100000
-      learning_rate: 0.1
+      n_estimators: 30000
+      learning_rate: 0.05
       objective: "regression_l1"
       random_state: 42
 
